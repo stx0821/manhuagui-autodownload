@@ -2,4 +2,4 @@
 ```
 node index.js
 ```
-![Image](https://octodex.github.com/images/yaktocat.png)
+![Image](./jdfw.min.gif)
