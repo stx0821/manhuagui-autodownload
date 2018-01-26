@@ -84,7 +84,7 @@ req(cfg.path).then(d => {
 			// console.log(error);
 		}
 	})
-	d.replace(/<ul style="display:block">.*?<\/ul>/im, list => {
+	d.replace(/<ul style="display:block">.*?comment mt10/im, list => {
 		list.match(/<a href="(.*?)" title="(.*?)"/img).forEach((value, index) => {
 			value.replace(/href="(\/comic\/\d+\/\d+\.html)" title="(.*?)"/im, (...args) => {
 				obj.vol[index] = {
