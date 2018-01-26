@@ -10,6 +10,5 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "request": "^2.83.0"
   }
 }
