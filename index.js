@@ -84,7 +84,7 @@ req(cfg.path).then(d => {
 			// console.log(error);
 		}
 	})
-	d.replace(/<ul style="display:block">.*?comment mt10/im, list => {
+	d.replace(/<\/span><\/h4>.*?comment mt10/im, list => {
 		list.match(/<a href="(.*?)" title="(.*?)"/img).forEach((value, index) => {
 			value.replace(/href="(\/comic\/\d+\/\d+\.html)" title="(.*?)"/im, (...args) => {
 				obj.vol[index] = {
@@ -102,7 +102,7 @@ req(cfg.path).then(d => {
 	});
 	Promise.all(obj.promises).then(d => {
 		d.forEach((v, i) => {
-			v.replace(/p;}\((.*?),\{\}/im, $0 => {
+			String(v).replace(/p;}\((.*?),\{\}/im, $0 => {
 				let t = $0.substr(4)
 				let s = eval(`[${t}]`);
 				let d = parse.apply(this, s);
@@ -110,7 +110,7 @@ req(cfg.path).then(d => {
 
 				cInfo.files.forEach((value, index) => {
 					setTimeout(() => {
-						req(encodeURI((`http://i.hamreus.com:8080${path.join(cInfo.path, cInfo.files[index])}`).replace(/\\/ig, '/')), 'i.hamreus.com', 8080, hamreusHeaders).then(img => {
+						req(encodeURI((`${path.join(cInfo.path, cInfo.files[index])}?cid=${cInfo.cid}&md5=${cInfo.sl.md5}`).replace(/\\/ig, '/')), 'i.hamreus.com', 8080, hamreusHeaders).then(img => {
 							let p = path.join(__dirname, cfg.downloadDir, obj.title, obj.vol[i].title, cInfo.files[index]);
 							fs.writeFile(p, img, 'binary', error => {
 								console.log('下载完成:', cInfo.files[index]);
@@ -133,7 +133,17 @@ req(cfg.path).then(d => {
 
 
 
+process.on('unhandledRejection', (reason, p) => {
+	console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+});
 
+process.on('rejectionHandled', (p) => {
+	console.log('rejectionHandled:', p);
+});
+
+process.on('uncaughtException', (err) => {
+	console.log('uncaughtException:', err);
+});
 
 
 
