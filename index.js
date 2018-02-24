@@ -26,7 +26,7 @@ let hamreusHeaders = {
 	'Connection': 'keep-alive',
 	'Host': 'i.hamreus.com:8080',
 	'Pragma': 'no-cache',
-	'Referer': 'http://www.manhuagui.com/comic/21093/349687.html',
+	'Referer': 'http://www.manhuagui.com/comic/5546/51102.html',
 	'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36',
 }
 
@@ -72,7 +72,7 @@ let obj = {
 	vol: [],
 	promises: []
 }
-req(cfg.path).then(d => {
+req('/comic/' + cfg.comicID + '/').then(d => {
 	d.replace(/<title>(.*?) - 看漫画/, (...args) => {
 		try {
 			fs.mkdirSync(path.join(__dirname, cfg.downloadDir, args[1]));
@@ -110,7 +110,7 @@ req(cfg.path).then(d => {
 
 				cInfo.files.forEach((value, index) => {
 					setTimeout(() => {
-						req(encodeURI((`${path.join(cInfo.path, cInfo.files[index])}?cid=${cInfo.cid}&md5=${cInfo.sl.md5}`).replace(/\\/ig, '/')), 'i.hamreus.com', 8080, hamreusHeaders).then(img => {
+						req(encodeURI((`${cInfo.path}${cInfo.files[index]}?cid=${cInfo.cid}&md5=${cInfo.sl.md5}`).replace(/\\/ig, '/')), 'i.hamreus.com', 80, hamreusHeaders).then(img => {
 							let p = path.join(__dirname, cfg.downloadDir, obj.title, obj.vol[i].title, cInfo.files[index]);
 							fs.writeFile(p, img, 'binary', error => {
 								console.log('下载完成:', cInfo.files[index]);

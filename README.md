@@ -1,4 +1,4 @@
-修改config.js的path
+修改config.js的comicID
 ```
 node index.js
 ```
