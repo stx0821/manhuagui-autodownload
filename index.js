@@ -106,8 +106,8 @@ req('/comic/' + cfg.comicID + '/').then(d => {
 				let t = $0.substr(4)
 				let s = eval(`[${t}]`);
 				let d = parse.apply(this, s);
-				eval(d);
-
+				var cInfo = JSON.parse(d.split('(')[1].split(')')[0]);
+				
 				cInfo.files.forEach((value, index) => {
 					setTimeout(() => {
 						req(encodeURI((`${cInfo.path}${cInfo.files[index]}?cid=${cInfo.cid}&md5=${cInfo.sl.md5}`).replace(/\\/ig, '/')), 'i.hamreus.com', 80, hamreusHeaders).then(img => {
