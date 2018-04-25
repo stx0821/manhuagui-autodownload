@@ -1,4 +1,5 @@
 const http = require('http');
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const cfg = require('./config.js');
@@ -32,8 +33,8 @@ let hamreusHeaders = {
 
 
 
-const req = (path, hostname = 'www.manhuagui.com', port = 80, headers = manhuaguiHeaders) => new Promise((resolve, reject) => {
-	http.request({
+const req = (path, hostname = 'www.manhuagui.com', port = 443, headers = manhuaguiHeaders) => new Promise((resolve, reject) => {
+	https.request({
 		hostname,
 		path,
 		port,
@@ -110,7 +111,7 @@ req('/comic/' + cfg.comicID + '/').then(d => {
 				
 				cInfo.files.forEach((value, index) => {
 					setTimeout(() => {
-						req(encodeURI((`${cInfo.path}${cInfo.files[index]}?cid=${cInfo.cid}&md5=${cInfo.sl.md5}`).replace(/\\/ig, '/')), 'i.hamreus.com', 80, hamreusHeaders).then(img => {
+						req(encodeURI((`${cInfo.path}${cInfo.files[index]}?cid=${cInfo.cid}&md5=${cInfo.sl.md5}`).replace(/\\/ig, '/')), 'i.hamreus.com', null, hamreusHeaders).then(img => {
 							let p = path.join(__dirname, cfg.downloadDir, obj.title, obj.vol[i].title, cInfo.files[index]);
 							fs.writeFile(p, img, 'binary', error => {
 								console.log('下载完成:', cInfo.files[index]);
