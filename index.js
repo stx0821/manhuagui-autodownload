@@ -56,7 +56,11 @@ const req = (path, hostname = 'www.manhuagui.com', port = 443, headers = manhuag
 		res.on('error', (error) => {
 			reject(error);
 		})
-	}).end()
+	})
+	.on('error', (error) => {
+		reject(error);
+	})
+	.end()
 })
 
 function parse(p, a, c, k, e, d) {
