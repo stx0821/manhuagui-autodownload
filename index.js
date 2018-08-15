@@ -1,6 +1,7 @@
 const http = require('http');
 const https = require('https');
 const fs = require('fs');
+const fss = require('fs-extra')
 const path = require('path');
 const cfg = require('./config.js');
 const LZString = require('./lzs.js');
@@ -56,17 +57,15 @@ const req = (path, hostname = 'www.manhuagui.com', port = 443, headers = manhuag
 		res.on('error', (error) => {
 			reject(error);
 		})
-	}).end()
+	})
+	.on('error', (error) => {
+		reject(error);
+	})
+	.end()
 })
 
 function parse(p, a, c, k, e, d) {
 	e = function (c) { return (c < a ? "" : e(parseInt(c / a))) + ((c = c % a) > 35 ? String.fromCharCode(c + 29) : c.toString(36)) }; if (!''.replace(/^/, String)) { while (c--) d[e(c)] = k[c] || e(c); k = [function (e) { return d[e] }]; e = function () { return '\\w+' }; c = 1; }; while (c--) if (k[c]) p = p.replace(new RegExp('\\b' + e(c) + '\\b', 'g'), k[c]); return p;
-}
-
-try {
-	fs.mkdirSync(path.join(__dirname, cfg.downloadDir));
-} catch (error) {
-	// console.log(error);
 }
 
 let obj = {
@@ -75,15 +74,7 @@ let obj = {
 }
 req('/comic/' + cfg.comicID + '/').then(d => {
 	d.replace(/<title>(.*?) - 看漫画/, (...args) => {
-		try {
-			fs.mkdirSync(path.join(__dirname, cfg.downloadDir, args[1]));
-			obj.title = args[1];
-		} catch (error) {
-			let ts = String(Date.now());
-			fs.mkdirSync(path.join(__dirname, cfg.downloadDir, ts));
-			obj.title = ts;
-			// console.log(error);
-		}
+		obj.title = args[1];
 	})
 	d.replace(/<\/span><\/h4>.*?comment mt10/im, list => {
 		list.match(/<a href="(.*?)" title="(.*?)"/img).forEach((value, index) => {
@@ -93,11 +84,6 @@ req('/comic/' + cfg.comicID + '/').then(d => {
 					title: args[2],
 				}
 				obj.promises[index] = req(args[1]);
-				try {
-					fs.mkdirSync(path.join(__dirname, cfg.downloadDir, obj.title, args[2]));
-				} catch (error) {
-					// console.log(error);
-				}
 			})
 		});
 	});
@@ -112,6 +98,12 @@ req('/comic/' + cfg.comicID + '/').then(d => {
 				cInfo.files.forEach((value, index) => {
 					setTimeout(() => {
 						req(encodeURI((`${cInfo.path}${cInfo.files[index]}?cid=${cInfo.cid}&md5=${cInfo.sl.md5}`).replace(/\\/ig, '/')), 'i.hamreus.com', null, hamreusHeaders).then(img => {
+							let filePath = path.join(__dirname, cfg.downloadDir, obj.title, obj.vol[i].title)
+							let filePathName = path.join(filePath, cInfo.files[index])
+							if(!fs.existsSync(filePath)) {
+								fss.mkdirpSync(filePath)
+							}
+
 							let p = path.join(__dirname, cfg.downloadDir, obj.title, obj.vol[i].title, cInfo.files[index]);
 							fs.writeFile(p, img, 'binary', error => {
 								console.log('下载完成:', cInfo.files[index]);
